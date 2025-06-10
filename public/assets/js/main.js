@@ -118,75 +118,70 @@ document.addEventListener('DOMContentLoaded', () => {
     
     loadChatHistory();
   }
-  
   function sendMessage() {
-    const message = inputBox.textContent.trim();
-    if (!message) return;
-    
-    addUserMessage(message);
-    inputBox.textContent = '';
-    
-    // Add to chat history
-    const chatIndex = chats.findIndex(c => c.id === currentChatId);
-    if (chatIndex !== -1) {
+  const message = inputBox.textContent.trim();
+  if (!message) return;
+
+  addUserMessage(message);
+  inputBox.textContent = '';
+
+  const chatIndex = chats.findIndex(c => c.id === currentChatId);
+  if (chatIndex !== -1) {
+    chats[chatIndex].messages.push({
+      role: 'user',
+      content: message,
+      timestamp: new Date().toISOString()
+    });
+
+    if (chats[chatIndex].title === 'New Vision') {
+      chats[chatIndex].title = message.length > 30 ? `${message.substring(0, 30)}...` : message;
+      loadChatHistory();
+    }
+
+    saveChats();
+  }
+
+  showTypingIndicator();
+
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      messages: chats[chatIndex].messages.map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    hideTypingIndicator();
+
+    if (data?.choices && data.choices.length > 0) {
+      const aiMessage = data.choices[0]?.message?.content || "[No content received]";
+      addAIMessage(aiMessage);
+
       chats[chatIndex].messages.push({
-        role: 'user',
-        content: message,
+        role: 'assistant',
+        content: aiMessage,
         timestamp: new Date().toISOString()
       });
-      
-      // Update title if it's the first message
-      if (chats[chatIndex].title === 'New Vision') {
-        chats[chatIndex].title = message.length > 30 ? `${message.substring(0, 30)}...` : message;
-        loadChatHistory();
-      }
-      
+
       saveChats();
+    } else {
+      console.error('No choices returned:', data);
+      addAIMessage("I didn't receive a response from the AI. Please try again.");
     }
-    
-    // Show typing indicator
-    showTypingIndicator();
-    
-    // Send to API
-    fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        messages: [
-          ...chats[chatIndex].messages.map(m => ({
-            role: m.role,
-            content: m.content
-          }))
-        ]
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      hideTypingIndicator();
-      
-      if (data.choices && data.choices.length > 0) {
-        const aiMessage = data.choices[0].message.content;
-        addAIMessage(aiMessage);
-        
-        // Add to chat history
-        if (chatIndex !== -1) {
-          chats[chatIndex].messages.push({
-            role: 'assistant',
-            content: aiMessage,
-            timestamp: new Date().toISOString()
-          });
-          saveChats();
-        }
-      }
-    })
-    .catch(error => {
-      hideTypingIndicator();
-      console.error('Error:', error);
-      addAIMessage("I'm having trouble connecting to the cognitive network. Please try again later.");
-    });
-  }
+  })
+  .catch(error => {
+    hideTypingIndicator();
+    console.error('Fetch error:', error);
+    addAIMessage("Something went wrong while connecting to the server.");
+  });
+}
+
   
   function addUserMessage(message) {
     const messageElement = document.createElement('div');
