@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EYES AI | The Vision of Tomorrow</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="icon" href="assets/images/eyes-logo.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+      <div class="loading-content">
+        <div class="eyes-logo">
+          <div class="eye left-eye">
+            <div class="pupil"></div>
+          </div>
+          <div class="eye right-eye">
+            <div class="pupil"></div>
+          </div>
+        </div>
+        <h1>EYES</h1>
+        <p>Initializing cognitive interface...</p>
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App Interface -->
+    <div class="main-app" id="mainApp">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="eyes-logo-small">
+            <div class="eye left-eye">
+              <div class="pupil"></div>
+            </div>
+            <div class="eye right-eye">
+              <div class="pupil"></div>
+            </div>
+          </div>
+          <h2>EYES</h2>
+        </div>
+        
+        <button class="new-chat-btn" id="newChatBtn">
+          <i class="fas fa-plus"></i> New Vision
+        </button>
+        
+        <div class="chat-history" id="chatHistory">
+          <!-- Chat history items will be added here -->
+        </div>
+        
+        <div class="sidebar-footer">
+          <button class="settings-btn" id="settingsBtn">
+            <i class="fas fa-cog"></i> Settings
+          </button>
+        </div>
+      </div>
+      
+      <!-- Chat Area -->
+      <div class="chat-area">
+        <div class="chat-header">
+          <div class="chat-title" id="chatTitle">New Vision</div>
+          <div class="header-actions">
+            <button class="action-btn" id="shareBtn">
+              <i class="fas fa-share-alt"></i>
+            </button>
+            <button class="action-btn" id="menuBtn">
+              <i class="fas fa-ellipsis"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="messages-container" id="messagesContainer">
+          <!-- Messages will be added here -->
+        </div>
+        
+        <div class="input-container">
+          <div class="input-box" id="inputBox" contenteditable="true" placeholder="Share your vision..."></div>
+          <button class="send-btn" id="sendBtn">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="close-modal" id="closeSettings">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-item">
+          <label>Theme</label>
+          <select id="themeSelect">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System Default</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>Animation Intensity</label>
+          <select id="animationSelect">
+            <option value="full">Full</option>
+            <option value="reduced">Reduced</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
+
