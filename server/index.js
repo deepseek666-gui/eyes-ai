@@ -6,22 +6,25 @@ const rateLimit = require('express-rate-limit');
 const path = require('path');
 
 const app = express();
+app.set('trust proxy', 1); // ✅ Fixes rate-limit crash on Render
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Rate limiting
+// Rate Limiter
 app.use(rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
 }));
 
-// OpenRouter Proxy Endpoint
+// AI Proxy Endpoint
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
+
+    console.log("🧠 Incoming:", messages);
 
     const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
       model: 'openai/gpt-4',
@@ -33,17 +36,19 @@ app.post('/api/chat', async (req, res) => {
       }
     });
 
+    console.log("✅ OpenRouter Response:", response.data);
     res.json(response.data);
+
   } catch (error) {
-    console.error('OpenRouter API Error:', error?.response?.data || error.message);
+    console.error('❌ Error:', error?.response?.data || error.message);
     res.status(500).json({
-      error: 'AI backend error',
+      error: 'Failed to get AI response',
       details: error?.response?.data || error.message
     });
   }
 });
 
-// SPA fallback for React-like apps
+// Fallback: serve frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
@@ -51,5 +56,5 @@ app.get('*', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
