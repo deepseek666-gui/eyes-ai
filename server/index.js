@@ -3,25 +3,29 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const path = require('path'); // Required for file paths
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../public'))); // Serve static files
 
-// Rate limiting to prevent abuse
+// Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100
 });
 app.use(limiter);
 
-// Secure API endpoint
+// API Endpoint (unchanged)
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
     
     const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-      model: "openai/gpt-4", // or any other model you prefer
+      model: "openai/gpt-4",
       messages,
     }, {
       headers: {
@@ -37,8 +41,13 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// Serve frontend for all routes (NEW)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
